@@ -4,20 +4,14 @@ import Header from "../components/Header";
 import Timer from "../components/Timer";
 
 const MainScreen = () => {
-  return (
-    // <SafeAreaView style={styles.droidSafeArea}>
-    <SafeAreaView style={{ flex: 1 }}>
-      {/* <Header /> */}
-      <Timer />
-    </SafeAreaView>
-  );
+	return <Timer style={{ flex: 1 }} />;
 };
 
 export default MainScreen;
 
 const styles = StyleSheet.create({
-  droidSafeArea: {
-    flex: 1,
-    paddingTop: Platform.OS === "android" ? 25 : 0,
-  },
+	droidSafeArea: {
+		flex: 1,
+		paddingTop: Platform.OS === "android" ? 25 : 0,
+	},
 });

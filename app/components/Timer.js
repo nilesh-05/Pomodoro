@@ -62,7 +62,20 @@ const Timer = () => {
           contentContainerStyle={{
             paddingHorizontal: SPACING,
           }}
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
+            const inputRange = [
+              (index - 1) * SIZE,
+              index * SIZE,
+              (index + 1) * SIZE,
+            ];
+            const opacity = scrollX.interpolate({
+              inputRange,
+              outputRange: [0.3, 1, 0.3],
+            });
+            const scale = scrollX.interpolate({
+              inputRange,
+              outputRange: [0.6, 1, 0.6],
+            });
             return (
               <View
                 style={{
@@ -71,7 +84,17 @@ const Timer = () => {
                   alignItems: "center",
                 }}
               >
-                <Text style={[styles.text]}>{item}</Text>
+                <Animated.Text
+                  style={[
+                    styles.text,
+                    {
+                      opacity,
+                      transform: [{ scale }],
+                    },
+                  ]}
+                >
+                  {item}
+                </Animated.Text>
               </View>
             );
           }}

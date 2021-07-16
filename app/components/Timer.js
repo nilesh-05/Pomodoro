@@ -1,55 +1,103 @@
-import React from "react";
+import * as React from "react";
 import {
-	StyleSheet,
-	Text,
-	Dimensions,
-	Animated,
-	View,
-	TouchableOpacity,
 	Vibration,
 	StatusBar,
-	TextInput,
-	Platform,
+	Easing,
 	FlatList,
+	TextInput,
+	Animated,
+	Dimensions,
+	TouchableOpacity,
+	Text,
+	View,
+	StyleSheet,
 } from "react-native";
+
 import colors from "../config/colors";
 
-const { width, height } = Dimensions.get("screen");
-const timerArray = [...Array(10).keys()].map((i) => (i === 0 ? 1 : i * 5));
-const SIZE = width * 0.3;
-const SPACING = (width - SIZE) / 2;
+const { width, height } = Dimensions.get("window");
 
-const Timer = () => {
-	// let index = 0;
-	const [duration, setDuration] = React.useState(timerArray[0]);
-	// const [timeLeft, setTimeLeft] = React.useState(timerArray[index]);
+const timers = [...Array(13).keys()].map((i) => (i === 0 ? 1 : i * 5));
+const itemSize = width * 0.38;
+const itemSpacing = (width - itemSize) / 2;
 
-	const scrollX = React.useRef(new Animated.Value(0)).current;
+export default function App() {
+	const [duration, setDuration] = React.useState(timers[0]);
+
+	const xScroll = React.useRef(new Animated.Value(0)).current;
+
 	const timerAnimation = React.useRef(new Animated.Value(height)).current;
+	const animateButton = React.useRef(new Animated.Value(0)).current;
+	const animateTextInput = React.useRef(new Animated.Value(timers[0])).current;
 
-	const animation = React.useCallback(() => {
+	const inputRef = React.useRef();
+
+	// const toTime = (seconds) => {
+	// 	var date = new Date(null);
+	// 	date.setSeconds(seconds);
+	// 	return date.toISOString().substr(11, 8);
+	// };
+	React.useEffect(() => {
+		const listner = animateTextInput.addListener(({ value }) => {
+			inputRef?.current?.setNativeProps({
+				text: Math.ceil(value * 60).toString(),
+				// text: toTime(value * 60),
+			});
+		});
+		return () => {
+			animateTextInput.removeListener(listner);
+			animateTextInput.removeAllListeners();
+		};
+	});
+
+	const animations = React.useCallback(() => {
+		animateTextInput.setValue(duration);
 		Animated.sequence([
+			Animated.timing(animateButton, {
+				toValue: 1,
+				duration: 300,
+				useNativeDriver: true,
+			}),
 			Animated.timing(timerAnimation, {
 				toValue: 0,
 				duration: 300,
 				useNativeDriver: true,
 			}),
-			Animated.timing(timerAnimation, {
-				toValue: height,
-				duration: duration * 1000,
-				useNativeDriver: true,
-			}),
+			Animated.parallel([
+				Animated.timing(animateTextInput, {
+					toValue: 0,
+					duration: duration * 1000 * 60,
+					useNativeDriver: true,
+				}),
+				Animated.timing(timerAnimation, {
+					toValue: height,
+					duration: duration * 1000 * 60,
+					useNativeDriver: true,
+				}),
+			]),
 		]).start(() => {
-			// handlePlay();
+			Animated.timing(animateButton, {
+				toValue: 0,
+				duration: 300,
+				useNativeDriver: true,
+			}).start();
 		});
 	}, [duration]);
 
-	// const handlePlay = () => {
-	// 	setInterval(() => {
-	// 		setTimeLeft(timeLeft - 1);
-	// 	}, 1000);
-	// };
+	const opacity = animateButton.interpolate({
+		inputRange: [0, 1],
+		outputRange: [1, 0],
+	});
 
+	const translateY = animateButton.interpolate({
+		inputRange: [0, 1],
+		outputRange: [0, 200],
+	});
+
+	const textOpacity = animateButton.interpolate({
+		inputRange: [0, 1],
+		outputRange: [0, 1],
+	});
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden />
@@ -67,9 +115,7 @@ const Timer = () => {
 						],
 					},
 				]}
-			>
-				{/* <Text style={styles.text}>{timeLeft}</Text> */}
-			</Animated.View>
+			/>
 			<Animated.View
 				style={[
 					StyleSheet.absoluteFillObject,
@@ -77,10 +123,16 @@ const Timer = () => {
 						justifyContent: "flex-end",
 						alignItems: "center",
 						paddingBottom: 100,
+						opacity,
+						transform: [
+							{
+								translateY,
+							},
+						],
 					},
 				]}
 			>
-				<TouchableOpacity onPress={animation}>
+				<TouchableOpacity onPress={animations}>
 					<View style={styles.roundButton} />
 				</TouchableOpacity>
 			</Animated.View>
@@ -93,44 +145,64 @@ const Timer = () => {
 					flex: 1,
 				}}
 			>
-				{/* <Text style={styles.text}>{duration}</Text> */}
-				<Animated.FlatList
-					data={timerArray}
-					keyExtractor={(item) => item.toString()}
-					onMomentumScrollEnd={(event) => {
-						const index = Math.round(event.nativeEvent.contentOffset.x / SIZE);
-						// setDuration(timerArray[index] * 60);
-						setDuration(timerArray[index]);
+				<Animated.View
+					style={{
+						position: "absolute",
+						width: itemSize,
+						justifyContent: "center",
+						alignSelf: "center",
+						alignItems: "center",
+						opacity: textOpacity,
 					}}
+				>
+					<TextInput
+						ref={inputRef}
+						style={styles.text}
+						defaultValue={duration.toString()}
+					/>
+				</Animated.View>
+				<Animated.FlatList
+					data={timers}
+					keyExtractor={(item) => item.toString()}
 					horizontal
 					bounces={false}
+					showsHorizontalScrollIndicator={false}
+					onMomentumScrollEnd={(event) => {
+						const index = Math.round(
+							event.nativeEvent.contentOffset.x / itemSize,
+						);
+						setDuration(timers[index] * 60);
+					}}
 					onScroll={Animated.event(
-						[{ nativeEvent: { contentOffset: { x: scrollX } } }],
+						[{ nativeEvent: { contentOffset: { x: xScroll } } }],
 						{ useNativeDriver: true },
 					)}
-					snapToInterval={SIZE}
-					showsHorizontalScrollIndicator={false}
+					snapToInterval={itemSize}
+					decelerationRate="fast"
+					style={{ flexGrow: 0, opacity }}
 					contentContainerStyle={{
-						paddingHorizontal: SPACING,
+						paddingHorizontal: itemSpacing,
 					}}
 					renderItem={({ item, index }) => {
 						const inputRange = [
-							(index - 1) * SIZE,
-							index * SIZE,
-							(index + 1) * SIZE,
+							(index - 1) * itemSize,
+							index * itemSize,
+							(index + 1) * itemSize,
 						];
-						const opacity = scrollX.interpolate({
+
+						const opacity = xScroll.interpolate({
 							inputRange,
-							outputRange: [0.3, 1, 0.3],
+							outputRange: [0.4, 1, 0.4],
 						});
-						const scale = scrollX.interpolate({
+
+						const scale = xScroll.interpolate({
 							inputRange,
 							outputRange: [0.6, 1, 0.6],
 						});
 						return (
 							<View
 								style={{
-									width: SIZE,
+									width: itemSize,
 									justifyContent: "center",
 									alignItems: "center",
 								}}
@@ -140,7 +212,11 @@ const Timer = () => {
 										styles.text,
 										{
 											opacity,
-											transform: [{ scale }],
+											transform: [
+												{
+													scale,
+												},
+											],
 										},
 									]}
 								>
@@ -153,9 +229,7 @@ const Timer = () => {
 			</View>
 		</View>
 	);
-};
-
-export default Timer;
+}
 
 const styles = StyleSheet.create({
 	container: {
@@ -165,13 +239,12 @@ const styles = StyleSheet.create({
 	roundButton: {
 		width: 80,
 		height: 80,
-		borderRadius: 40,
+		borderRadius: 80,
 		backgroundColor: colors.red,
 	},
 	text: {
-		fontSize: SIZE * 0.6,
-		fontFamily: Platform.OS === "android" ? "Roboto" : "system",
+		fontSize: itemSize * 0.8,
 		color: colors.text,
-		fontWeight: "900",
+		fontWeight: "800",
 	},
 });

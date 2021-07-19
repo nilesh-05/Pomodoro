@@ -17,7 +17,7 @@ import colors from "../config/colors";
 
 const { width, height } = Dimensions.get("window");
 
-const timers = [...Array(13).keys()].map((i) => (i === 0 ? 1 : i * 5));
+const timers = [...Array(10).keys()].map((i) => (i === 0 ? 1 : i * 5));
 const itemSize = width * 0.38;
 const itemSpacing = (width - itemSize) / 2;
 

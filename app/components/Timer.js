@@ -14,21 +14,23 @@ import {
 } from "react-native";
 
 import colors from "../config/colors";
+import FloatingText from "./FloatingText";
 
 const { width, height } = Dimensions.get("window");
 
 const timers = [...Array(10).keys()].map((i) => (i === 0 ? 1 : i * 5));
-const itemSize = width * 0.38;
+const itemSize = width * 0.4;
 const itemSpacing = (width - itemSize) / 2;
 
 export default function App() {
 	const [duration, setDuration] = React.useState(timers[0]);
+	const [time, setTime] = React.useState("Work");
 
 	const xScroll = React.useRef(new Animated.Value(0)).current;
 
 	const timerAnimation = React.useRef(new Animated.Value(height)).current;
 	const animateButton = React.useRef(new Animated.Value(0)).current;
-	const animateTextInput = React.useRef(new Animated.Value(timers[0])).current;
+	// const animateTextInput = React.useRef(new Animated.Value(timers[0])).current;
 
 	const inputRef = React.useRef();
 
@@ -37,21 +39,27 @@ export default function App() {
 	// 	date.setSeconds(seconds);
 	// 	return date.toISOString().substr(11, 8);
 	// };
-	React.useEffect(() => {
-		const listner = animateTextInput.addListener(({ value }) => {
-			inputRef?.current?.setNativeProps({
-				text: Math.ceil(value * 60).toString(),
-				// text: toTime(value * 60),
-			});
-		});
-		return () => {
-			animateTextInput.removeListener(listner);
-			animateTextInput.removeAllListeners();
-		};
-	});
+	// React.useEffect(() => {
+	// 	const listner = animateTextInput.addListener(({ value }) => {
+	// 		inputRef?.current?.setNativeProps({
+	// 			text: "Work",
+	// 			// text: toTime(value * 60),
+	// 		});
+	// 	});
+	// 	return () => {
+	// 		animateTextInput.removeListener(listner);
+	// 		animateTextInput.removeAllListeners();
+	// 	};
+	// });
+
+	const buttonClicked = () => {
+		animations();
+		if (time === "Work") setTime("Break");
+		else setTime("Work");
+	};
 
 	const animations = React.useCallback(() => {
-		animateTextInput.setValue(duration);
+		// animateTextInput.setValue(duration);
 		Animated.sequence([
 			Animated.timing(animateButton, {
 				toValue: 1,
@@ -64,11 +72,11 @@ export default function App() {
 				useNativeDriver: true,
 			}),
 			Animated.parallel([
-				Animated.timing(animateTextInput, {
-					toValue: 0,
-					duration: duration * 1000 * 60,
-					useNativeDriver: true,
-				}),
+				// Animated.timing(animateTextInput, {
+				// 	toValue: 0,
+				// 	duration: duration * 1000 * 60,
+				// 	useNativeDriver: true,
+				// }),
 				Animated.timing(timerAnimation, {
 					toValue: height,
 					duration: duration * 1000 * 60,
@@ -115,7 +123,12 @@ export default function App() {
 						],
 					},
 				]}
-			/>
+			>
+				<FloatingText mode={time} />
+				{/* <Text style={{ fontSize: itemSize * 0.2, color: colors.text }}>
+					
+				</Text> */}
+			</Animated.View>
 			<Animated.View
 				style={[
 					StyleSheet.absoluteFillObject,
@@ -132,7 +145,7 @@ export default function App() {
 					},
 				]}
 			>
-				<TouchableOpacity onPress={animations}>
+				<TouchableOpacity onPress={buttonClicked}>
 					<View style={styles.roundButton} />
 				</TouchableOpacity>
 			</Animated.View>
@@ -155,11 +168,7 @@ export default function App() {
 						opacity: textOpacity,
 					}}
 				>
-					<TextInput
-						ref={inputRef}
-						style={styles.text}
-						defaultValue={duration.toString()}
-					/>
+					{/* <TextInput ref={inputRef} style={styles.text} defaultValue={time} /> */}
 				</Animated.View>
 				<Animated.FlatList
 					data={timers}
@@ -243,7 +252,7 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.red,
 	},
 	text: {
-		fontSize: itemSize * 0.8,
+		fontSize: itemSize * 0.4,
 		color: colors.text,
 		fontWeight: "800",
 	},

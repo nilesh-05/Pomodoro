@@ -16,7 +16,7 @@ import {
 import colors from "../config/colors";
 import FloatingText from "./FloatingText";
 
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get("screen");
 
 const timers = [...Array(10).keys()].map((i) => (i === 0 ? 1 : i * 5));
 const itemSize = width * 0.4;
@@ -30,27 +30,8 @@ export default function App() {
 
 	const timerAnimation = React.useRef(new Animated.Value(height)).current;
 	const animateButton = React.useRef(new Animated.Value(0)).current;
-	// const animateTextInput = React.useRef(new Animated.Value(timers[0])).current;
 
 	const inputRef = React.useRef();
-
-	// const toTime = (seconds) => {
-	// 	var date = new Date(null);
-	// 	date.setSeconds(seconds);
-	// 	return date.toISOString().substr(11, 8);
-	// };
-	// React.useEffect(() => {
-	// 	const listner = animateTextInput.addListener(({ value }) => {
-	// 		inputRef?.current?.setNativeProps({
-	// 			text: "Work",
-	// 			// text: toTime(value * 60),
-	// 		});
-	// 	});
-	// 	return () => {
-	// 		animateTextInput.removeListener(listner);
-	// 		animateTextInput.removeAllListeners();
-	// 	};
-	// });
 
 	const buttonClicked = () => {
 		animations();
@@ -59,7 +40,6 @@ export default function App() {
 	};
 
 	const animations = React.useCallback(() => {
-		// animateTextInput.setValue(duration);
 		Animated.sequence([
 			Animated.timing(animateButton, {
 				toValue: 1,
@@ -72,11 +52,6 @@ export default function App() {
 				useNativeDriver: true,
 			}),
 			Animated.parallel([
-				// Animated.timing(animateTextInput, {
-				// 	toValue: 0,
-				// 	duration: duration * 1000 * 60,
-				// 	useNativeDriver: true,
-				// }),
 				Animated.timing(timerAnimation, {
 					toValue: height,
 					duration: duration * 1000 * 60,
@@ -125,9 +100,6 @@ export default function App() {
 				]}
 			>
 				<FloatingText mode={time} />
-				{/* <Text style={{ fontSize: itemSize * 0.2, color: colors.text }}>
-					
-				</Text> */}
 			</Animated.View>
 			<Animated.View
 				style={[
@@ -167,9 +139,7 @@ export default function App() {
 						alignItems: "center",
 						opacity: textOpacity,
 					}}
-				>
-					{/* <TextInput ref={inputRef} style={styles.text} defaultValue={time} /> */}
-				</Animated.View>
+				></Animated.View>
 				<Animated.FlatList
 					data={timers}
 					keyExtractor={(item) => item.toString()}
@@ -252,7 +222,7 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.red,
 	},
 	text: {
-		fontSize: itemSize * 0.4,
+		fontSize: itemSize * 0.8,
 		color: colors.text,
 		fontWeight: "800",
 	},

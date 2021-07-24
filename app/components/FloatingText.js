@@ -21,14 +21,17 @@ const FloatingText = ({ mode }) => {
 		"Well, if you are fed up with all your efforts, all you need to do is to take a break.",
 		"Taking break helps you understand yourself better.",
 		"Rest will make you do things better.",
+		"Life is so beautiful. Just take a break to remind yourself it.",
 		"The solution for every problem resides within you. Sometimes you just need to give some time and space to find that.",
 	];
 	return (
 		<Text style={styles.text}>
-			ENJOY YOUR BREAK :)
+			ENJOY YOUR {mode.toUpperCase()} :)
 			{"\n"}
 			{"\n"}
-			{breakArray[Math.floor(Math.random() * breakArray.length)]}
+			{mode == "Work"
+				? breakArray[Math.floor(Math.random() * breakArray.length)]
+				: workArray[Math.floor(Math.random() * workArray.length)]}
 		</Text>
 	);
 };

@@ -29,8 +29,6 @@ export default function App() {
 	const timerAnimation = React.useRef(new Animated.Value(height)).current;
 	const animateButton = React.useRef(new Animated.Value(0)).current;
 
-	const inputRef = React.useRef();
-
 	const buttonClicked = () => {
 		animations();
 		if (time === "Work") setTime("Break");
@@ -43,20 +41,18 @@ export default function App() {
 		);
 		setSound(sound);
 
-		console.log("Playing Sound");
 		await sound.playAsync();
 	};
 
 	React.useEffect(() => {
 		return sound
 			? () => {
-					console.log("Unloading Sound");
 					sound.unloadAsync();
 			  }
 			: undefined;
 	}, [sound]);
 
-	const PATTERN = [0, 1000, 1000, 1000];
+	const PATTERN = [500, 1000];
 	const animations = React.useCallback(() => {
 		Animated.sequence([
 			Animated.timing(animateButton, {
@@ -72,7 +68,7 @@ export default function App() {
 			Animated.parallel([
 				Animated.timing(timerAnimation, {
 					toValue: height,
-					duration: duration * 1000,
+					duration: duration * 60 * 1000,
 					useNativeDriver: true,
 				}),
 			]),
@@ -175,7 +171,7 @@ export default function App() {
 						const index = Math.round(
 							event.nativeEvent.contentOffset.x / itemSize,
 						);
-						setDuration(timers[index] * 60);
+						setDuration(timers[index]);
 					}}
 					onScroll={Animated.event(
 						[{ nativeEvent: { contentOffset: { x: xScroll } } }],

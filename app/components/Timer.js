@@ -12,6 +12,7 @@ import {
 	View,
 	StyleSheet,
 } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import colors from "../config/colors";
 import FloatingText from "./FloatingText";
@@ -118,7 +119,13 @@ export default function App() {
 				]}
 			>
 				<TouchableOpacity onPress={buttonClicked}>
-					<View style={styles.roundButton} />
+					{/* <View style={styles.roundButton} /> */}
+					<MaterialIcons
+						name="play-circle-filled"
+						size={80}
+						color={colors.red}
+						style={styles.roundButton}
+					/>
 				</TouchableOpacity>
 			</Animated.View>
 			<View
@@ -214,12 +221,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: colors.black,
-	},
-	roundButton: {
-		width: 80,
-		height: 80,
-		borderRadius: 80,
-		backgroundColor: colors.red,
 	},
 	text: {
 		fontSize: itemSize * 0.8,

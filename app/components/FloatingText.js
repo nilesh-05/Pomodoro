@@ -26,12 +26,12 @@ const FloatingText = ({ mode }) => {
 	];
 	return (
 		<Text style={styles.text}>
-			ENJOY YOUR {mode.toUpperCase()} :)
+			<Text style={styles.heading}>ENJOY YOUR {mode.toUpperCase()} :)</Text>
 			{"\n"}
 			{"\n"}
 			{mode == "Work"
-				? breakArray[Math.floor(Math.random() * breakArray.length)]
-				: workArray[Math.floor(Math.random() * workArray.length)]}
+				? workArray[Math.floor(Math.random() * workArray.length)]
+				: breakArray[Math.floor(Math.random() * breakArray.length)]}
 		</Text>
 	);
 };
@@ -45,6 +45,8 @@ const styles = StyleSheet.create({
 		paddingTop: 10,
 		marginHorizontal: 25,
 		textAlign: "center",
+	},
+	heading: {
 		fontWeight: "bold",
 	},
 });

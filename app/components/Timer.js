@@ -2,13 +2,9 @@ import * as React from "react";
 import {
 	Vibration,
 	StatusBar,
-	Easing,
-	FlatList,
-	TextInput,
 	Animated,
 	Dimensions,
 	TouchableOpacity,
-	Text,
 	View,
 	StyleSheet,
 } from "react-native";
@@ -38,8 +34,12 @@ export default function App() {
 		animations();
 		if (time === "Work") setTime("Break");
 		else setTime("Work");
+		// setTimeout(() => {
+		// 	Vibration.vibrate(2000);
+		// }, duration * 1000 * 60);
 	};
 
+	const PATTERN = [0, 1000, 1000, 1000];
 	const animations = React.useCallback(() => {
 		Animated.sequence([
 			Animated.timing(animateButton, {
@@ -55,11 +55,12 @@ export default function App() {
 			Animated.parallel([
 				Animated.timing(timerAnimation, {
 					toValue: height,
-					duration: duration * 1000 * 60,
+					duration: duration * 1000,
 					useNativeDriver: true,
 				}),
 			]),
 		]).start(() => {
+			Vibration.vibrate(PATTERN);
 			Animated.timing(animateButton, {
 				toValue: 0,
 				duration: 300,
@@ -119,7 +120,6 @@ export default function App() {
 				]}
 			>
 				<TouchableOpacity onPress={buttonClicked}>
-					{/* <View style={styles.roundButton} /> */}
 					<MaterialIcons
 						name="play-circle-filled"
 						size={80}

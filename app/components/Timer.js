@@ -9,6 +9,7 @@ import {
 	StyleSheet,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Audio } from "expo-av";
 
 import colors from "../config/colors";
 import FloatingText from "./FloatingText";
@@ -22,7 +23,7 @@ const itemSpacing = (width - itemSize) / 2;
 export default function App() {
 	const [duration, setDuration] = React.useState(timers[0]);
 	const [time, setTime] = React.useState("Work");
-
+	const [sound, setSound] = React.useState();
 	const xScroll = React.useRef(new Animated.Value(0)).current;
 
 	const timerAnimation = React.useRef(new Animated.Value(height)).current;
@@ -34,10 +35,26 @@ export default function App() {
 		animations();
 		if (time === "Work") setTime("Break");
 		else setTime("Work");
-		// setTimeout(() => {
-		// 	Vibration.vibrate(2000);
-		// }, duration * 1000 * 60);
 	};
+
+	const playSound = async () => {
+		const { sound } = await Audio.Sound.createAsync(
+			require("../../assets/iphone-ding-sound.mp3"),
+		);
+		setSound(sound);
+
+		console.log("Playing Sound");
+		await sound.playAsync();
+	};
+
+	React.useEffect(() => {
+		return sound
+			? () => {
+					console.log("Unloading Sound");
+					sound.unloadAsync();
+			  }
+			: undefined;
+	}, [sound]);
 
 	const PATTERN = [0, 1000, 1000, 1000];
 	const animations = React.useCallback(() => {
@@ -61,6 +78,7 @@ export default function App() {
 			]),
 		]).start(() => {
 			Vibration.vibrate(PATTERN);
+			playSound();
 			Animated.timing(animateButton, {
 				toValue: 0,
 				duration: 300,

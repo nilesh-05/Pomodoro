@@ -8,16 +8,16 @@ A small attempt to create it using react-native.
 
 Looks good to me though :)
 <br><br><br>
-![](./assets/working.png)
+<img src="./assets/working.png" height="400em">
 
 ## Select a time period
 
 <br><br><br>
-![](./assets/break.png)
+<img src="./assets/break.png" height="400em">
 
 ## Break time motivation
 
 <br><br><br>
-![](./assets/work.png)
+<img src="./assets/work.png" height="400em">
 
 ## Work time motivation

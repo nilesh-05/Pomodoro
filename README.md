@@ -1,4 +1,4 @@
-# Pomodoro
+# Pomodoro App
 
 This is a simple pomodoro app. It helps improving the productivity and reducing interruptions in your study sessions.
 
